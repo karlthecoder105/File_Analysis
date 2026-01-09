@@ -2,6 +2,14 @@ import os
 from datetime import datetime
 import glob
 
+#os.getcwd() – tagastab jooksva töötava kataloogi
+#os.listdir() – loetleb kõik failid ja kaustad kataloogis
+#os.path.isfile(path) – kontrollib, kas antud tee viitab failile
+#os.path.splitext(filename) – jagab failinime nimeks ja laiendiks
+#os.path.exists(path) – kontrollib, kas kaust või fail eksisteerib
+#os.mkdir(path) – loob uue kataloogi
+#os.remove(path) – kustutab faili
+
 print("Tere tulemast projekti analüüsaatorisse!\n")
 print("Asukoht:", os.getcwd())
 
