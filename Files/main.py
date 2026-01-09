@@ -2,21 +2,16 @@ import os
 from datetime import datetime
 import glob
 
-#os.getcwd() – tagastab jooksva töötava kataloogi
-#os.listdir() – loetleb kõik failid ja kaustad kataloogis
-#os.path.isfile(path) – kontrollib, kas antud tee viitab failile
-#os.path.splitext(filename) – jagab failinime nimeks ja laiendiks
-#os.path.exists(path) – kontrollib, kas kaust või fail eksisteerib
-#os.mkdir(path) – loob uue kataloogi
-#os.remove(path) – kustutab faili
+
+
 
 print("Tere tulemast projekti analüüsaatorisse!\n")
-print("Asukoht:", os.getcwd())
+print("Asukoht:", os.getcwd()) #os.getcwd() – tagastab jooksva töötava kataloogi
 
-failid = [f for f in os.listdir() if os.path.isfile(f)]
+failid = [f for f in os.listdir() if os.path.isfile(f)] #os.path.isfile(path) – kontrollib, kas antud tee viitab failile, os.listdir() – loetleb kõik failid ja kaustad kataloogis
 laiendid = set()
 for f in failid:
-    ext = os.path.splitext(f)[1]
+    ext = os.path.splitext(f)[1] #os.path.splitext(filename) – jagab failinime nimeks ja laiendiks
     if ext:
         laiendid.add(ext)
 print("Leitud failitüübid:", ", ".join(sorted(laiendid)) if laiendid else "Ei leitud laiendiga faile.")
@@ -78,8 +73,8 @@ while True:
             print("Pole tehtud ühtegi analüüsi!")
         else:
             kataloog = "Analüüsi_Raportid"
-            if not os.path.exists(kataloog):
-                os.mkdir(kataloog)
+            if not os.path.exists(kataloog): #os.path.exists(path) – kontrollib, kas kaust või fail eksisteerib
+                os.mkdir(kataloog) #os.mkdir(path) – loob uue kataloogi
             kuupaev = datetime.now().strftime("%Y_%m_%d_%H%M%S")
             failinimi = f"{kataloog}/raport_{kuupaev}.txt"
             with open(failinimi, "w", encoding="utf-8") as f:
@@ -105,7 +100,7 @@ while True:
         if kas == "jah":
             for f in logid:
                 try:
-                    os.remove(f)
+                    os.remove(f) #os.remove(path) – kustutab faili
                 except Exception as e:
                     print(f"Ei saanud kustutada {f}: {e}")
             print("Kustutatud.")
