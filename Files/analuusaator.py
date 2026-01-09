@@ -5,7 +5,12 @@
 # os.path.exists(path) – kontrollib, kas kaust või fail eksisteerib
 # os.mkdir(path) – loob uue kataloogi
 # os.remove(path) – kustutab faili
-
+# glob.glob(pattern) – loetleb kõik failid, mis vastavad mustrile (nt "*.py")
+# datetime.now().strftime(format) – tagastab jooksva kuupäeva/aja vormindatud tekstina
+# input() – küsib kasutajalt sisendit
+# print() – kuvab teksti ekraanile
+# open(filename, ...) – avab faili lugemiseks/kirjutamiseks
+# continue, break – tsükli juhtimine ("jätka" või "katkesta" tsükkel)
 
 
 import glob
