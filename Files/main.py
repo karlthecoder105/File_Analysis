@@ -2,29 +2,27 @@ import os
 from datetime import datetime
 import analuusaator
 
-def kuva_leitud_failitüübid():
-    failid = os.listdir()
-    laiendid = set()
-    for f in failid:
-        if os.path.isfile(f):
-            ext = os.path.splitext(f)[1]
-            if ext:  # ignoreeri failid ilma laiendita
-                laiendid.add(ext)
-    print("Leitud failitüübid selles kataloogis:")
-    print(", ".join(sorted(laiendid)) if laiendid else "Faililaiendeid ei leitud.")
+def kuva_failitüübid():
+    tipus = set()
+    for fname in os.listdir():
+        if os.path.isfile(fname):
+            ext = os.path.splitext(fname)[1]
+            if ext:
+                tipus.add(ext)
+    print("Leitud failitüübid:", ", ".join(sorted(tipus) if tipus else ["-"]))
 
-def summeeri_statistika(failinimekiri):
-    koguarv = {"read": 0, "tyhjad": 0, "TODO": 0, "FIXME": 0}
-    detailid = []
-    for fail in failinimekiri:
+def summeeri_sta(failid):
+    agg = {"read":0, "tyhjad":0, "TODO":0, "FIXME":0}
+    detail = []
+    for fail in failid:
         tulemus = analuusaator.analuusi_faili_sisu(fail)
         if "viga" in tulemus:
             print(f"Viga faili {fail} lugemisel: {tulemus['viga']}")
             continue
-        for k in koguarv.keys():
-            koguarv[k] += tulemus[k]
-        detailid.append(tulemus)
-    return koguarv, detailid
+        for k in agg:
+            agg[k] += tulemus[k]
+        detail.append(tulemus)
+    return agg, detail
 
 def salvesta_raport(statistika, detailid):
     analuusaator.loo_raporti_kataloog()
@@ -39,45 +37,35 @@ def salvesta_raport(statistika, detailid):
             f.write(str(d)+"\n")
     print(f"Raport salvestatud: {failinimi}")
 
-def kustuta_logid():
+def puhasta_logid():
     kataloog = "Analüüsi_Raportid"
     if not os.path.exists(kataloog):
         print("Logikataloogi pole.")
         return
     logid = [os.path.join(kataloog, f) for f in os.listdir(kataloog) if f.endswith(".txt")]
     if not logid:
-        print("Pole ühtegi logifaili kustutamiseks.")
+        print("Pole logifaile.")
         return
-    print("\nLeiti logifaile:")
-    for i, f in enumerate(logid):
-        print(f"{i+1}. {f}")
-    kas = input("Kas kustutada KÕIK logid? (jah/ei): ").strip().lower()
+    print(f"Leiti {len(logid)} logi/raportit.")
+    kas = input("Kas kustutada kõik? (jah/ei): ").strip().lower()
     if kas == "jah":
         for f in logid:
             try:
                 os.remove(f)
             except Exception as e:
                 print(f"Ei saanud kustutada {f}: {e}")
-        print("Logid on kustutatud.")
+        print("Kustutatud.")
     else:
-        print("Logisid ei kustutatud.")
-
-def otsi_algustahega():
-    taht = input("Sisesta failinime algustäht: ").strip()
-    if not taht or len(taht) != 1:
-        print("Palun sisesta üks täht.")
-        return
-    failid = analuusaator.leia_failid_algustahega(taht)
-    print(f"Failid, mis algavad tähega '{taht}':")
-    print("\n".join(failid) if failid else "Sobivaid faile ei leitud.")
+        print("Kustutamine tühistatud.")
 
 def main():
-    print("Tere tulemast projekti analüüsaatorisse!")
-    kuva_leitud_failitüübid()
-    viimati = (None, None)  # (statistika, detailid)
+    print("Tere tulemast projekti analüüsaatorisse!\n")
+    print("Asukoht:", os.getcwd())
+    kuva_failitüübid()
+    viimati = (None, None)
     while True:
         print("\nValikud:")
-        print("1 - Täisanalüüs vali laiendiga faile")
+        print("1 - Täisanalüüs (vali laiendi järgi)")
         print("2 - Salvesta viimane analüüs raportina")
         print("3 - Puhasta logid (kustuta raportid)")
         print("4 - Otsi faili algustähe järgi")
@@ -89,24 +77,30 @@ def main():
             if not failid:
                 print("Sobivaid faile ei leitud.")
                 continue
-            statistika, detailid = summeeri_statistika(failid)
-            print("Analüüsi tulemus:")
+            statistika, detailid = summeeri_sta(failid)
+            print("\nAnalüüsi tulemus:")
             print(statistika)
             viimati = (statistika, detailid)
         elif valik == "2":
             if viimati[0] is None:
-                print("Pole ühtegi tehtud analüüsi, mida salvestada!")
+                print("Pole tehtud analüüsi.")
             else:
                 salvesta_raport(viimati[0], viimati[1])
         elif valik == "3":
-            kustuta_logid()
+            puhasta_logid()
         elif valik == "4":
-            otsi_algustahega()
+            taht = input("Sisesta algustäht: ").strip()
+            if not taht or len(taht) != 1:
+                print("Sisesta just 1 täht.")
+                continue
+            failid = analuusaator.leia_failid_algustahega(taht)
+            print(f"Failid algusega '{taht}':")
+            print('\n'.join(failid) if failid else "Ei leitud.")
         elif valik == "0":
             print("Head aega!")
             break
         else:
-            print("Tundmatu valik!")
+            print("Vale valik.")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
